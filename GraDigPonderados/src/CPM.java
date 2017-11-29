@@ -1,5 +1,9 @@
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 /******************************************************************************
  *  Compilation:  javac CPM.java
@@ -54,36 +58,50 @@ public class CPM {
      *  Reads the precedence constraints desde standard input
   and prints a feasible schedule hacia standard output.
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         // number of jobs
-   
+        String fileName= "/home/tineo/ProyectoED2/GraDigPonderados/jobsPC.txt";
+
+
+        /*StringBuilder sb = new StringBuilder();
+        while(in.hasNext()) {
+            sb.append(in.next());
+        }
+        in.close();
+        String outString = sb.toString();
+
+        System.out.println(outString);*/
+
         int N = 10;
         // source and sink
         int inicio = 2*N;
         int fin   = 2*N + 1;
 
+        try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
+            stream.forEach(System.out::println);
+        }
         // build network
         DigrafoAristaPonderada G = new DigrafoAristaPonderada(2*N + 2);
-        /*
-        int N = StdIn.readInt();
-                int inicio = 2*N;
-                int fin   = 2*N + 1;
-                DigrafoAristaPonderada G = new DigrafoAristaPonderada(2*N + 2);
-          for (int i = 0; i < N; i++) {
-            double duracion = StdIn.readDouble();
-            G.agregarArista(new AristaDirigida(inicio, i, 0.0));
-            G.agregarArista(new AristaDirigida(i+N, fin, 0.0));
-            G.agregarArista(new AristaDirigida(i, i+N,    duracion));
 
-            // precedence constraints
-            int M = StdIn.readInt();
-            for (int j = 0; j < M; j++) {
-                int precedente = StdIn.readInt();
-                G.agregarArista(new AristaDirigida(N+i, precedente, 0.0));
-            }
-        */
-        
+        //int N = StdIn.readInt();
+         //       int inicio = 2*N;
+         //       int fin   = 2*N + 1;
+         //       DigrafoAristaPonderada G = new DigrafoAristaPonderada(2*N + 2);
+          for (int i = 0; i < N; i++) {
+              double duracion = StdIn.readDouble();
+              G.agregarArista(new AristaDirigida(inicio, i, 0.0));
+              G.agregarArista(new AristaDirigida(i + N, fin, 0.0));
+              G.agregarArista(new AristaDirigida(i, i + N, duracion));
+
+              // precedence constraints
+              int M = StdIn.readInt();
+              for (int j = 0; j < M; j++) {
+                  int precedente = StdIn.readInt();
+                  G.agregarArista(new AristaDirigida(N + i, precedente, 0.0));
+              }
+
+        /*
            double duracion = 41.0;
             G.agregarArista(new AristaDirigida(inicio, 0, 0.0));
             G.agregarArista(new AristaDirigida(10, fin, 0.0));
@@ -144,18 +162,18 @@ public class CPM {
             // 2 datos
                G.agregarArista(new AristaDirigida(19,4, 0.0));
                 G.agregarArista(new AristaDirigida(19,6, 0.0));
-            
-        // compute longest path
-        LPAciclico cml = new LPAciclico(G, inicio);
+            */
+              // compute longest path
+              LPAciclico cml = new LPAciclico(G, inicio);
 
-        // print results
-        StdOut.println(" Tra   inicio  fin");
-        StdOut.println("--------------------");
-        for (int m = 0; m < N; m++) {
-            StdOut.printf("%4d %7.1f %7.1f\n", m, cml.distanciaHacia(m),
-                    cml.distanciaHacia(m+N));
-        }
-        StdOut.printf("Tiempo de terminación: %7.1f\n", cml.distanciaHacia(fin));
-    
+              // print results
+              StdOut.println(" Tra   inicio  fin");
+              StdOut.println("--------------------");
+              for (int m = 0; m < N; m++) {
+                  StdOut.printf("%4d %7.1f %7.1f\n", m, cml.distanciaHacia(m),
+                          cml.distanciaHacia(m + N));
+              }
+              StdOut.printf("Tiempo de terminación: %7.1f\n", cml.distanciaHacia(fin));
+          }
     }
 }
