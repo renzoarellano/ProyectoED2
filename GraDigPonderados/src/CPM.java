@@ -1,7 +1,12 @@
 
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
@@ -61,119 +66,87 @@ public class CPM {
     public static void main(String[] args) throws IOException {
 
         // number of jobs
-        String fileName= "/home/tineo/ProyectoED2/GraDigPonderados/jobsPC.txt";
+        //String fileName= "/home/tineo/ProyectoED2/GraDigPonderados/jobsPC.txt";
 
+        CPMWindow win =  new CPMWindow();
+        win.jTable1.setModel(new DefaultTableModel() { });
 
-        /*StringBuilder sb = new StringBuilder();
-        while(in.hasNext()) {
-            sb.append(in.next());
-        }
-        in.close();
-        String outString = sb.toString();
+        win.jButton1.addActionListener(e -> {
 
-        System.out.println(outString);*/
+            String aux="", texto="";
+            try
+            {
+                /**llamamos el metodo que permite cargar la ventana*/
+                JFileChooser file=new JFileChooser();
+                file.showOpenDialog(win);
+                /**abrimos el archivo seleccionado*/
+                File abre = file.getSelectedFile();
 
-        int N = 10;
-        // source and sink
-        int inicio = 2*N;
-        int fin   = 2*N + 1;
+                win.jTextField1.setText(abre.getAbsolutePath());
+                /**recorremos el archivo, lo leemos para plasmarlo
+                 *en el area de texto*/
+                if(abre!=null)
+                {
+                    FileReader archivo=new FileReader(abre);
 
-        try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
-            stream.forEach(System.out::println);
-        }
-        // build network
-        DigrafoAristaPonderada G = new DigrafoAristaPonderada(2*N + 2);
+                    int N = 10;
+                    // source and sink
+                    int inicio = 2*N;
+                    int fin   = 2*N + 1;
+                    int linea = -1;
 
-        //int N = StdIn.readInt();
-         //       int inicio = 2*N;
-         //       int fin   = 2*N + 1;
-         //       DigrafoAristaPonderada G = new DigrafoAristaPonderada(2*N + 2);
-          for (int i = 0; i < N; i++) {
-              double duracion = StdIn.readDouble();
-              G.agregarArista(new AristaDirigida(inicio, i, 0.0));
-              G.agregarArista(new AristaDirigida(i + N, fin, 0.0));
-              G.agregarArista(new AristaDirigida(i, i + N, duracion));
+                    DigrafoAristaPonderada G = new DigrafoAristaPonderada(2*N + 2);
 
-              // precedence constraints
-              int M = StdIn.readInt();
-              for (int j = 0; j < M; j++) {
-                  int precedente = StdIn.readInt();
-                  G.agregarArista(new AristaDirigida(N + i, precedente, 0.0));
-              }
+                    try (Stream<String> stream = Files.lines(Paths.get(abre.getAbsolutePath()))) {
 
-        /*
-           double duracion = 41.0;
-            G.agregarArista(new AristaDirigida(inicio, 0, 0.0));
-            G.agregarArista(new AristaDirigida(10, fin, 0.0));
-            G.agregarArista(new AristaDirigida(0,10,duracion));
-            //3 datos
-                G.agregarArista(new AristaDirigida(10,1, 0.0));
-                G.agregarArista(new AristaDirigida(10, 7, 0.0));
-                G.agregarArista(new AristaDirigida(10, 9, 0.0));
-       double duracion2 = 51.0;
-            G.agregarArista(new AristaDirigida(inicio, 1, 0.0));
-            G.agregarArista(new AristaDirigida(11, fin, 0.0));
-            G.agregarArista(new AristaDirigida(1,11,duracion2));
-               //1 dato
-                G.agregarArista(new AristaDirigida(11,2, 0.0));
-                
-        double duracion3 = 50.0;
-            G.agregarArista(new AristaDirigida(inicio, 2, 0.0));
-            G.agregarArista(new AristaDirigida(12, fin, 0.0));
-            G.agregarArista(new AristaDirigida(2,12,duracion3));
-          
-        double duracion4 = 36.0;
-            G.agregarArista(new AristaDirigida(inicio, 3, 0.0));
-            G.agregarArista(new AristaDirigida(13, fin, 0.0));
-            G.agregarArista(new AristaDirigida(3,13,duracion4));
-        double duracion5 = 38.0;
-            G.agregarArista(new AristaDirigida(inicio, 4, 0.0));
-            G.agregarArista(new AristaDirigida(14, fin, 0.0));
-            G.agregarArista(new AristaDirigida(4,14,    duracion5));
-        double duracion6 = 45.0;
-            G.agregarArista(new AristaDirigida(inicio, 5, 0.0));
-            G.agregarArista(new AristaDirigida(15, fin, 0.0));
-            G.agregarArista(new AristaDirigida(5,15,    duracion6));
-            
-        double duracion7 = 21.0;
-            G.agregarArista(new AristaDirigida(inicio, 6, 0.0));
-            G.agregarArista(new AristaDirigida(16, fin, 0.0));
-            G.agregarArista(new AristaDirigida(6,16,    duracion7));
-            // 2 datos
-               G.agregarArista(new AristaDirigida(16,3, 0.0));
-                G.agregarArista(new AristaDirigida(16, 8, 0.0));
-        double duracion8 = 32.0;
-            G.agregarArista(new AristaDirigida(inicio, 7, 0.0));
-            G.agregarArista(new AristaDirigida(17, fin, 0.0));
-            G.agregarArista(new AristaDirigida(7,17,    duracion8));
-            // 2 datos
-               G.agregarArista(new AristaDirigida(17,3, 0.0));
-                G.agregarArista(new AristaDirigida(17, 8, 0.0));
-        double duracion9 = 32.0;
-            G.agregarArista(new AristaDirigida(inicio, 8, 0.0));
-            G.agregarArista(new AristaDirigida(18, fin, 0.0));
-            G.agregarArista(new AristaDirigida(8,18,    duracion9));
-            // 1 dato
-               G.agregarArista(new AristaDirigida(18,2, 0.0));
-        double duracion10 = 29.0;
-            G.agregarArista(new AristaDirigida(inicio, 9, 0.0));
-            G.agregarArista(new AristaDirigida(19, fin, 0.0));
-            G.agregarArista(new AristaDirigida(9,19,    duracion8));
-            // 2 datos
-               G.agregarArista(new AristaDirigida(19,4, 0.0));
-                G.agregarArista(new AristaDirigida(19,6, 0.0));
-            */
-              // compute longest path
-              LPAciclico cml = new LPAciclico(G, inicio);
+                        for( String line : (Iterable<String>) stream::iterator ) {
+                            if (linea < 0) {
+                                N = Integer.parseInt(line);
+                                inicio = 2*N;
+                                fin   = 2*N + 1;
+                                G = new DigrafoAristaPonderada(2*N + 2);
+                            }else{
+                                System.out.println(line);
+                                List<String> items = Arrays.asList(line.split("\\s*  \\s*"));
 
-              // print results
-              StdOut.println(" Tra   inicio  fin");
-              StdOut.println("--------------------");
-              for (int m = 0; m < N; m++) {
-                  StdOut.printf("%4d %7.1f %7.1f\n", m, cml.distanciaHacia(m),
-                          cml.distanciaHacia(m + N));
-              }
-              StdOut.printf("Tiempo de terminación: %7.1f\n", cml.distanciaHacia(fin));
-          }
+                                G.agregarArista(new AristaDirigida(inicio, linea, 0.0));
+                                G.agregarArista(new AristaDirigida(linea + N, fin, 0.0));
+                                G.agregarArista(new AristaDirigida(linea,N + linea,Double.parseDouble(items.get(0))));
+
+                                if(Integer.parseInt((items.get(1)))>0) {
+                                    List<String> nums = Arrays.asList(items.get(2).split("\\s* \\s*"));
+                                    for (String num :   nums) {
+                                        G.agregarArista(new AristaDirigida(N + linea,Integer.parseInt(num), 0.0));
+                                    }
+                                }
+                            }
+                            linea++;
+                        }
+                        LPAciclico cml = new LPAciclico(G, inicio);
+                        // print results
+                        StdOut.println(" Tra   inicio  fin");
+                        StdOut.println("--------------------");
+                        Object[] header = new Object[]{"Tarea", "Inicio", "Fin"};
+                        DefaultTableModel model = new DefaultTableModel(header, 0);
+                        for (int m = 0; m < N; m++) {
+                            StdOut.printf("%4d %7.1f %7.1f\n", m, cml.distanciaHacia(m),
+                                   cml.distanciaHacia(m + N));
+                            model.addRow(new Object[]{m, cml.distanciaHacia(m), cml.distanciaHacia(m + N)});
+                        }
+                        win.jTable1.setModel(model);
+                        win.jTextField2.setText(String.valueOf(cml.distanciaHacia(fin)));
+
+                        StdOut.printf("Tiempo de terminación: %7.1f\n", cml.distanciaHacia(fin));
+                    }
+                }
+            }
+            catch(IOException ex)
+            {
+                JOptionPane.showMessageDialog(null,ex+"" +
+                                "\nNo se ha encontrado el archivo",
+                        "ADVERTENCIA!!!",JOptionPane.WARNING_MESSAGE);
+            }
+        });
+        win.setVisible(true);
     }
 }
